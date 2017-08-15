@@ -7,8 +7,24 @@ import { Component } from '@angular/core';
       <h1>To Do List for {{month}}/{{day}}/{{year}}</h1>
       <h3>{{currentFocus}}</h3>
       <ul>
-        <li *ngFor="let currentTask of tasks">{{currentTask.description}}</li>
+        <li [class]="priorityColor(currentTask)" (click)="isDone(currentTask)" *ngFor="let currentTask of tasks">{{currentTask.description}} <button (click)="editTask(currentTask)">Edit</button></li>
       </ul>
+      <hr>
+      <div>
+        <div *ngIf="selectedTask">
+          <h3>{{selectedTask.description}}</h3>
+          <p>Task Complete? {{selectedTask.done}}</p>
+          <hr>
+          <h3>Edit Task</h3>
+          <label>Enter Task Description:</label>
+          <input [(ngModel)]="selectedTask.description">
+          <label>Enter Task Priority, 3 being the highest level of priority:</label>
+          <input type="radio" [(ngModel)]="selectedTask.priority" [value]="1">1<br>
+          <input type="radio" [(ngModel)]="selectedTask.priority" [value]="2">2<br>
+          <input type="radio" [(ngModel)]="selectedTask.priority" [value]="3">3<br>
+          <button (click)="finishedEditing()">Done</button>
+        </div>
+      </div>
   </div>
   `
 })
@@ -20,12 +36,38 @@ export class AppComponent {
   day: number = this.currentTime.getDate();
   year: number = this.currentTime.getFullYear();
   tasks: Task[] = [
-    new Task('Finish weekend Angular homework'),
-    new Task('Feed and water kitties'),
-    new Task('Begin brainstorming project ideas')
-  ];
+    new Task('Finish weekend Angular homework', 3),
+    new Task('Feed and water kitties', 2),
+    new Task('Begin brainstorming project ideas', 1) ];
+  selectedTask: null;
+
+  editTask() {
+    alert("You just requested to edit a task!");
+  }
+
+  isDone(clickedTask: Task) {
+    if(clickedTask.done === true) {
+      alert("This task is done!");
+    } else {
+      alert("This task is not done. Better get to work!");
+    }
+  }
+
+  priorityColor(currentTask){
+    if (currentTask.priority === 3){
+      return "bg-danger";
+    } else if (currentTask.priority === 2){
+      return "bg-warning";
+    } else {
+      return "bg-info";
+    }
+  }
+
+  finishedEditing() {
+    this.selectedTask = null;
+  }
 }
 export class Task {
   public done: boolean = false;
-  constructor(public description: string) { }
+  constructor(public description: string, public priority: number) { }
 }
